@@ -1,2 +1,2 @@
 all:
-	sleep infinity
+	npm run dev
