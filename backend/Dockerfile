@@ -16,4 +16,6 @@ RUN			set -eux \
 			&& pip3 install --upgrade pip \
 			&& pip install fastapi uvicorn
 
+RUN			git clone https://github.com/longld/peda.git ~/peda && echo "source ~/peda/peda.py" >> ~/.gdbinit
+
 WORKDIR		/root/workdir
