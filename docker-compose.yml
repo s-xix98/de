@@ -7,6 +7,7 @@ services:
       - 3000:3000
     volumes:
       - ./frontend:/root/workdir
+    init: true
     command: [ "make" ]
 
   backend:
@@ -16,4 +17,5 @@ services:
       - 8000:8000
     volumes:
       - ./backend:/root/workdir
+    init: true
     command: [ "make" ]
