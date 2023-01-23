@@ -43,7 +43,7 @@ void restore_ori_inst(pid_t pid, void *addr, long ori_inst) {
   x_ptrace_get_register_info(pid, &regs);
   regs.rip -= 1;
   x_ptrace_set_register_info(pid, &regs);
-  ptrace(PTRACE_SINGLESTEP, pid, NULL, NULL);
+  x_ptrace_run_single_step(pid);
   wait(NULL);
 }
 
