@@ -6,9 +6,11 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./frontend:/root/workdir
-    init: true
-    command: [ "make" ]
+      # HR効いてほしそうなやつ
+      - ./frontend/src:/frontend/src
+      - ./frontend/public:/frontend/public
+      - ./frontend/index.html:/frontend/index.html
+    command: npm run dev
 
   backend:
     build: backend

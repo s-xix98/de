@@ -1,3 +1,8 @@
 FROM		node
 
-WORKDIR		/root/workdir
+WORKDIR		/frontend
+
+COPY ./ ./
+
+RUN npm install
+
