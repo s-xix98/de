@@ -1,21 +1,21 @@
-FROM	ubuntu:latest
+FROM ubuntu:latest
 
-RUN	set -eux \
-	&& apt-get update && apt-get install -y --no-install-recommends \
-	clang \
-	curl \
-	gcc \
-	git \
-	gdb \
-	make \
-	python3 \
-	python3-pip \
-	&& apt-get clean
+RUN set -eux \
+  && apt-get update && apt-get install -y --no-install-recommends \
+  clang \
+  curl \
+  gcc \
+  git \
+  gdb \
+  make \
+  python3 \
+  python3-pip \
+  && apt-get clean
 
-RUN	set -eux \
-	&& pip3 install --upgrade pip \
-	&& pip install fastapi uvicorn
+RUN set -eux \
+  && pip3 install --upgrade pip \
+  && pip install fastapi uvicorn
 
-RUN	git clone https://github.com/longld/peda.git ~/peda && echo "source ~/peda/peda.py" >> ~/.gdbinit
+RUN git clone https://github.com/longld/peda.git ~/peda && echo "source ~/peda/peda.py" >> ~/.gdbinit
 
-WORKDIR	/workdir
+WORKDIR /workdir
