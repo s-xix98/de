@@ -1,3 +1,8 @@
 FROM		node
 
-WORKDIR		/root/workdir
+WORKDIR		/workdir
+
+COPY package*.json ./
+
+RUN npm i
+

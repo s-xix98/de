@@ -6,7 +6,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./frontend:/root/workdir
+      - ./frontend:/workdir
     command: npm run dev
 
   backend:
@@ -15,5 +15,5 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./backend:/root/workdir
+      - ./backend:/workdir
     command: uvicorn main:app --reload --port=8000 --host=0.0.0.0
