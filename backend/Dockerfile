@@ -15,7 +15,7 @@ RUN set -eux \
 
 RUN set -eux \
   && pip3 install --upgrade pip \
-  && pip install python-socketio aiohttp
+  && pip install python-socketio aiohttp pexpect
 
 RUN git clone https://github.com/longld/peda.git ~/peda && echo "source ~/peda/peda.py" >> ~/.gdbinit
 
