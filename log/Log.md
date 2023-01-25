@@ -16,3 +16,7 @@ server: {
 ```
 
 - [サーバオプション | Vite](https://ja.vitejs.dev/config/server-options.html)
+
+## python-socketio
+
+- [Getting Started — python-socketio documentation](https://python-socketio.readthedocs.io/en/latest/intro.html)
