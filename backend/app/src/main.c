@@ -14,6 +14,12 @@
 #include "x_ptrace.h"
 
 #define DE_END_CMD "---DE_END_CMD---"
+#define DE_CMD_INVALID NULL
+#define DE_CMD_SINGLE_STEP "s"
+
+bool streq(const char *s1, const char *s2) {
+  return !strcmp(s1, s2);
+}
 
 void single_step(pid_t pid) {
   int status;
@@ -61,17 +67,30 @@ void tracer(pid_t pid) {
   restore_ori_inst(pid, main_addr, original_inst);
 
   char *line;
+  char *ex_cmd = NULL;
+  char *prev_cmd = NULL;
   while (1) {
     line = readline("readline > ");
     if (line == NULL) {
       break;
     }
-    printf("readline input : %s\n", line);
+    if (streq(line, "") && prev_cmd != NULL) {
+      ex_cmd = prev_cmd;
+    } else {
+      ex_cmd = line;
+    }
+
+    if (streq(ex_cmd, DE_CMD_SINGLE_STEP)) {
+      prev_cmd = DE_CMD_SINGLE_STEP;
+      single_step(pid);
+      print_regs(pid);
+    } else {
+      prev_cmd = DE_CMD_INVALID;
+      printf("Invalid command\n");
+    }
     free(line);
 
-    print_regs(pid);
-    single_step(pid);
-    printf(DE_END_CMD);
+    printf(DE_END_CMD "\n");
     fflush(stdout);
   }
 }
