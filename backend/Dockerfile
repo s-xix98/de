@@ -6,8 +6,9 @@ RUN set -eux \
   clang-format \
   curl \
   gcc \
-  git \
   gdb \
+  git \
+  libreadline-dev \
   make \
   python3 \
   python3-pip \

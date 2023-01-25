@@ -5,6 +5,7 @@ TARGET			:=		target
 CC				:=		gcc
 CFLAGS			:=		-Wall -Wextra -Werror -MMD -MP 
 INCLUDE			:=		-I include
+LIBS			:=		-lreadline
 
 # SRCS
 # ------------------------------------------------------------------------------------------
@@ -23,7 +24,7 @@ PHONY	:=	all
 all: $(NAME) $(TARGET)
 
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDE) $(OBJS) -o $(NAME)
+	$(CC) $(CFLAGS) $(INCLUDE) $(OBJS) $(LIBS) -o $(NAME)
 
 $(TARGET): target.c
 	$(CC) $(CFLAGS) -no-pie -o $(TARGET) target.c

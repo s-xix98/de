@@ -1,3 +1,4 @@
+#include <readline/readline.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -59,12 +60,15 @@ void tracer(pid_t pid) {
   wait(NULL);
   restore_ori_inst(pid, main_addr, original_inst);
 
-  char c;
-  int counter = 1;
+  char *line;
   while (1) {
-    printf("counter %d\n", counter);
-    counter++;
-    read(STDIN_FILENO, &c, 1);
+    line = readline("readline > ");
+    if (line == NULL) {
+      break;
+    }
+    printf("readline input : %s\n", line);
+    free(line);
+
     print_regs(pid);
     single_step(pid);
     printf(DE_END_CMD);
