@@ -2,7 +2,7 @@ import sys
 import pexpect
 import subprocess
 
-DE_END_CMD = "---DE_END_CMD---"
+DE_CMD_OUTPUT_END = "---DE_CMD_OUTPUT_END---"
 
 
 def make() -> bool:
@@ -16,7 +16,7 @@ def interactive():
         print("de_ctl input : ", s)
         print()
         connection.sendline(s)
-        connection.expect(DE_END_CMD)
+        connection.expect(DE_CMD_OUTPUT_END)
         print(connection.before)
 
 

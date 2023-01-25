@@ -13,7 +13,7 @@
 #include "de.h"
 #include "x_ptrace.h"
 
-#define DE_END_CMD "---DE_END_CMD---"
+#define DE_CMD_OUTPUT_END "---DE_CMD_OUTPUT_END---"
 #define DE_CMD_INVALID NULL
 #define DE_CMD_SINGLE_STEP "s"
 
@@ -90,7 +90,7 @@ void tracer(pid_t pid) {
     }
     free(line);
 
-    printf(DE_END_CMD "\n");
+    printf(DE_CMD_OUTPUT_END "\n");
     fflush(stdout);
   }
 }
