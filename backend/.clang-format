@@ -1,0 +1,5 @@
+# Base format style
+BasedOnStyle: Google
+
+# Do not allow one-line functions
+AllowShortFunctionsOnASingleLine: None

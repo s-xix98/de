@@ -45,6 +45,10 @@ fclean: clean
 PHONY	+=	re
 re: fclean all
 
+PHONY	+=	fmt
+fmt:
+	clang-format -i $(shell find . -type f -name '*.c' -o -name '*.hpp')
+
 # etc.
 # ------------------------------------------------------------------------------------------
 -include $(DEPENDS)

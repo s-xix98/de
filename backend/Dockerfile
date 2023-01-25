@@ -3,6 +3,7 @@ FROM ubuntu:latest
 RUN set -eux \
   && apt-get update && apt-get install -y --no-install-recommends \
   clang \
+  clang-format \
   curl \
   gcc \
   git \
