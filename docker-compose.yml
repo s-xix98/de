@@ -16,4 +16,4 @@ services:
       - 8000:8000
     volumes:
       - ./backend:/workdir
-    command: uvicorn main:app --reload --port=8000 --host=0.0.0.0
+    command: python3 -u main.py
