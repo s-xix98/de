@@ -12,6 +12,8 @@
 #include "de.h"
 #include "x_ptrace.h"
 
+#define DE_END_CMD "---DE_END_CMD---"
+
 void single_step(pid_t pid) {
   int status;
 
@@ -62,9 +64,11 @@ void tracer(pid_t pid) {
   while (1) {
     printf("counter %d\n", counter);
     counter++;
+    read(STDIN_FILENO, &c, 1);
     print_regs(pid);
     single_step(pid);
-    read(STDIN_FILENO, &c, 1);
+    printf(DE_END_CMD);
+    fflush(stdout);
   }
 }
 
