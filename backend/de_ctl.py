@@ -28,6 +28,14 @@ def show_asm_code(rip, objdump_output_splited, output_range=5):
         idx += 1
 
 
+def get_main_addr(objdump_output_splited) -> int:
+    for line in objdump_output_splited:
+        if "<main>" in line:
+            main_addr = int(line.split()[0], 16)
+            return main_addr
+    return None
+
+
 def get_rip(s) -> int:
     for line in s.splitlines():
         if "RIP" in line:
@@ -40,6 +48,17 @@ def interactive():
     target_path = "./app/target"
     objdump_output_splited = get_objdump_output(target_path).splitlines()
     connection = pexpect.spawn(f"./app/de {target_path}", encoding="utf-8")
+
+    main_addr = get_main_addr(objdump_output_splited)
+    if main_addr == None:
+        print("Error : main addr not found")
+        sys.exit(1)
+
+    connection.sendline(str(hex(main_addr)[2:]))
+    connection.expect(DE_CMD_OUTPUT_END)
+    de_output = connection.before
+    print(de_output)
+
     while True:
         connection.sendline(input())
         connection.expect(DE_CMD_OUTPUT_END)

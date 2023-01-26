@@ -56,15 +56,25 @@ void restore_ori_inst(pid_t pid, void *addr, long ori_inst) {
   wait(NULL);
 }
 
-void tracer(pid_t pid) {
-  wait(NULL);
+void go_to_main(pid_t pid) {
+  char *main_addr_line = readline("input main addr");
+  void *main_addr = (void *)strtol(main_addr_line, NULL, 16);
+  free(main_addr_line);
 
-  void *main_addr = (void *)0x401106;
+  printf("main addr %p\n", main_addr);
+  printf(DE_CMD_OUTPUT_END "\n");
+  fflush(stdout);
 
   long original_inst = set_brk_point(pid, main_addr);
   x_ptrace_cont_process(pid);
   wait(NULL);
   restore_ori_inst(pid, main_addr, original_inst);
+}
+
+void tracer(pid_t pid) {
+  wait(NULL);
+
+  go_to_main(pid);
 
   char *line;
   char *ex_cmd = NULL;
