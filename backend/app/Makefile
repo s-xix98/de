@@ -23,13 +23,13 @@ DEPENDS			:=		$(patsubst $(SRCS_DIR)%, $(OBJS_DIR)%, $(SRCS:%.c=%.d))
 PHONY	:=	all
 all: $(NAME) $(TARGET)
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) Makefile
 	$(CC) $(CFLAGS) $(INCLUDE) $(OBJS) $(LIBS) -o $(NAME)
 
-$(TARGET): target.c
+$(TARGET): target.c Makefile
 	$(CC) $(CFLAGS) -no-pie -mno-red-zone -g3 -o $(TARGET) target.c
 
-$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c Makefile
 	mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
