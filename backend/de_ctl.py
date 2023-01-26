@@ -10,16 +10,16 @@ def make() -> bool:
 
 
 def get_objdump_output(path) -> str:
-    proc = subprocess.run(f"objdump -D -M intel {path}", shell=True, stdout=subprocess.PIPE)
+    proc = subprocess.run(f"objdump -DS -M intel {path}", shell=True, stdout=subprocess.PIPE)
     return proc.stdout.decode()
 
 
-def show_asm_code(rip, objdump_output_splited):
+def show_asm_code(rip, objdump_output_splited, output_range=5):
     idx = 0
     for line in objdump_output_splited:
         if str(hex(rip))[2:] in line:
-            start = max(0, idx - 3)
-            end = min(len(objdump_output_splited), idx + 3 + 1)
+            start = max(0, idx - output_range)
+            end = min(len(objdump_output_splited), idx + output_range + 1)
             for i in range(start, end):
                 if i == idx:
                     print(f"==> {objdump_output_splited[i]}")

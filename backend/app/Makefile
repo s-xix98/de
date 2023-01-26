@@ -27,7 +27,7 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDE) $(OBJS) $(LIBS) -o $(NAME)
 
 $(TARGET): target.c
-	$(CC) $(CFLAGS) -no-pie -o $(TARGET) target.c
+	$(CC) $(CFLAGS) -no-pie -g3 -o $(TARGET) target.c
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c
 	mkdir -p $(@D)
