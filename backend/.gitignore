@@ -1,0 +1,7 @@
+__pycache__
+
+a.out
+
+# gdb
+.gdb_history
+peda-session*
