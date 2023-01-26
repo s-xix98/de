@@ -41,7 +41,7 @@ clean:
 PHONY	+=	fclean
 fclean: clean
 	rm -rf $(OBJS_DIR)
-	rm -f $(NAME)
+	rm -f $(NAME) $(TARGET)
 
 PHONY	+=	re
 re: fclean all
