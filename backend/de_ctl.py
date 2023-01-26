@@ -17,7 +17,8 @@ def get_objdump_output(path) -> str:
 def show_asm_code(rip, objdump_output_splited, output_range=5):
     idx = 0
     for line in objdump_output_splited:
-        if str(hex(rip))[2:] in line:
+        # TODO : "  " objdump の 出力に依存している ちゃんとパースして消す
+        if "  " + str(hex(rip))[2:] in line:
             start = max(0, idx - output_range)
             end = min(len(objdump_output_splited), idx + output_range + 1)
             for i in range(start, end):
@@ -25,6 +26,7 @@ def show_asm_code(rip, objdump_output_splited, output_range=5):
                     print(f"==> {objdump_output_splited[i]}")
                 else:
                     print(f"    {objdump_output_splited[i]}")
+            return
         idx += 1
 
 
