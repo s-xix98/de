@@ -3,4 +3,6 @@
 
 void print_regs(pid_t pid);
 
+long get_rsp(pid_t pid);
+
 #endif  // DE_H
