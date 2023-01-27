@@ -3,10 +3,12 @@ FROM ubuntu:latest
 RUN set -eux \
   && apt-get update && apt-get install -y --no-install-recommends \
   clang \
+  clang-format \
   curl \
   gcc \
-  git \
   gdb \
+  git \
+  libreadline-dev \
   make \
   python3 \
   python3-pip \
@@ -14,7 +16,7 @@ RUN set -eux \
 
 RUN set -eux \
   && pip3 install --upgrade pip \
-  && pip install python-socketio aiohttp
+  && pip install python-socketio aiohttp pexpect
 
 RUN git clone https://github.com/longld/peda.git ~/peda && echo "source ~/peda/peda.py" >> ~/.gdbinit
 
