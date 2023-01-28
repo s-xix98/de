@@ -13,13 +13,6 @@
 #include "de.h"
 #include "x_ptrace.h"
 
-// TODO : sizeof(long)でいいか確認する。
-#define WORD_SIZE sizeof(long)
-
-#define DE_CMD_OUTPUT_END "---DE_CMD_OUTPUT_END---"
-#define DE_CMD_INVALID NULL
-#define DE_CMD_SINGLE_STEP "s"
-
 bool streq(const char *s1, const char *s2) {
   return !strcmp(s1, s2);
 }
