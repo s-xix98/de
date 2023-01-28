@@ -117,6 +117,7 @@ void tracer(pid_t pid) {
       prev_cmd = DE_CMD_SINGLE_STEP;
       single_step(pid);
       print_regs(pid);
+      print_regs_to_json_file(pid);
       print_stack(pid);
     } else {
       prev_cmd = DE_CMD_INVALID;
