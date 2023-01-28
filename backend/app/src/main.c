@@ -1,3 +1,4 @@
+#include <readline/readline.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -11,6 +12,14 @@
 
 #include "de.h"
 #include "x_ptrace.h"
+
+#define DE_CMD_OUTPUT_END "---DE_CMD_OUTPUT_END---"
+#define DE_CMD_INVALID NULL
+#define DE_CMD_SINGLE_STEP "s"
+
+bool streq(const char *s1, const char *s2) {
+  return !strcmp(s1, s2);
+}
 
 void single_step(pid_t pid) {
   int status;
@@ -57,14 +66,32 @@ void tracer(pid_t pid) {
   wait(NULL);
   restore_ori_inst(pid, main_addr, original_inst);
 
-  char c;
-  int counter = 1;
+  char *line;
+  char *ex_cmd = NULL;
+  char *prev_cmd = NULL;
   while (1) {
-    printf("counter %d\n", counter);
-    counter++;
-    print_regs(pid);
-    single_step(pid);
-    read(STDIN_FILENO, &c, 1);
+    line = readline("readline > ");
+    if (line == NULL) {
+      break;
+    }
+    if (streq(line, "") && prev_cmd != NULL) {
+      ex_cmd = prev_cmd;
+    } else {
+      ex_cmd = line;
+    }
+
+    if (streq(ex_cmd, DE_CMD_SINGLE_STEP)) {
+      prev_cmd = DE_CMD_SINGLE_STEP;
+      single_step(pid);
+      print_regs(pid);
+    } else {
+      prev_cmd = DE_CMD_INVALID;
+      printf("Invalid command\n");
+    }
+    free(line);
+
+    printf(DE_CMD_OUTPUT_END "\n");
+    fflush(stdout);
   }
 }
 
