@@ -67,26 +67,6 @@ void go_to_main(pid_t pid) {
   restore_ori_inst(pid, main_addr, original_inst);
 }
 
-void print_mem(pid_t pid, void *addr, size_t n) {
-  size_t cnt = n / WORD_SIZE;
-
-  for (size_t i = 0; i < cnt; i++) {
-    long data = x_ptrace_get_data_from_addr(pid, addr);
-    printf("%p | 0x%lx\n", addr, data);
-    addr += WORD_SIZE;
-  }
-}
-
-void print_stack(pid_t pid) {
-  long rsp = get_rsp(pid);
-  size_t print_stack_size = 64;
-
-  printf("rsp : %lx\n", rsp);
-  printf("--- print stack ---\n");
-  print_mem(pid, (void *)rsp, print_stack_size);
-  printf("\n");
-}
-
 void tracer(pid_t pid) {
   wait(NULL);
 
@@ -112,6 +92,7 @@ void tracer(pid_t pid) {
       print_regs(pid);
       print_regs_to_json_file(pid);
       print_stack(pid);
+      print_stack_to_json_file(pid);
     } else {
       prev_cmd = DE_CMD_INVALID;
       printf("Invalid command\n");

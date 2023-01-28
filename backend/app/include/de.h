@@ -11,9 +11,14 @@
 #define DE_CMD_SINGLE_STEP "s"
 
 #define REGS_JSON_FILE "de_output_json/regs.json"
+#define STACK_JSON_FILE "de_output_json/stack.json"
 
 void print_regs(pid_t pid);
 void print_regs_to_json_file(pid_t pid);
 long get_rsp(pid_t pid);
+
+void print_mem(pid_t pid, void *addr, size_t n);
+void print_stack(pid_t pid);
+void print_stack_to_json_file(pid_t pid);
 
 #endif  // DE_H
