@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules/**
 # dockerのvolume作成時にrootがディレクトリを作るのを防ぐ
 !node_modules/.gitkeep
+.eslintcache
 dist
 dist-ssr
 *.local
