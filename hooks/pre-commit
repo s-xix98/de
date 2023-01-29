@@ -28,4 +28,9 @@ docker run \
 
 git add $target
 
+if [ -z `git diff --staged --name-only`]; then
+  echo -e "\033[35mno staging file\033[m"
+  exit 1
+fi
+
 echo -e "\033[32mpre-commit format is finished\033[m"
