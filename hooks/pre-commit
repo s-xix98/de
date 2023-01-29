@@ -2,9 +2,7 @@
 set -ue
 
 ## clang-format
-# ターゲットになるc,hファイルは/backend内にあることを期待している
-host_path=`git diff --staged --name-only | grep -E ".+\.(c|h)"` || :
-target=`echo $host_path | sed -e "s/backend\///g"`
+target=`git diff --staged --name-only | grep -E ".+\.(c|h)"` || :
 
 if [ -z $target ]; then
   echo -e "\033[35mno target file\033[m"
@@ -13,14 +11,22 @@ fi
 
 echo -e "\033[34mclang-format target:" $target "\033[m"
 
+# TODO: imageがないときbuildする
+image=de-clang-format
+has_image=`docker images -q $image`
+if [ -z $has_image ]; then
+  docker build -t $image -f hooks/Dockerfile_clang-format .
+fi
+
+
 docker run \
   --rm \
-  -v "$(pwd)/backend:/workdir" \
+  -v "$(pwd):/workdir" \
   -w /workdir \
   --user "$(id -u):$(id -g)" \
-  de_backend \
-  clang-format -i $target
+  $image \
+  -i $target
 
-git add $host_path
+git add $target
 
 echo -e "\033[32mpre-commit format is finished\033[m"
