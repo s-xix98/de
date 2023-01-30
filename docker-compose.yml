@@ -10,7 +10,7 @@ services:
     volumes:
       - ./frontend:/workdir
       - node_modules:/workdir/node_modules
-    command: npm run dev
+    command: /bin/bash -c "npm install && exec npm run dev"
 
   backend:
     build: backend
