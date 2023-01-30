@@ -52,3 +52,20 @@ void print_stack_to_json_file(pid_t pid) {
 
   fclose(output_file);
 }
+
+void print_bt(pid_t pid) {
+  unsigned long long rbp = get_rbp(pid);
+
+  printf("--- print bt ---\n");
+  printf("0x%llx\n", get_rip(pid));
+  while (1) {
+    // TODO : 終了条件調べる, 多分こいつは argc
+    if (rbp == 0x1) {
+      break;
+    }
+    long retaddr = x_ptrace_get_data_from_addr(pid, (void *)rbp + WORD_SIZE);
+    rbp = x_ptrace_get_data_from_addr(pid, (void *)rbp);
+    printf("0x%llx\n", (unsigned long long)retaddr);
+  }
+  printf("\n");
+}

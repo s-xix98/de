@@ -93,6 +93,7 @@ void tracer(pid_t pid) {
       print_regs_to_json_file(pid);
       print_stack(pid);
       print_stack_to_json_file(pid);
+      print_bt(pid);
     } else {
       prev_cmd = DE_CMD_INVALID;
       printf("Invalid command\n");

@@ -75,3 +75,19 @@ unsigned long long get_rsp(pid_t pid) {
 
   return regs.rsp;
 }
+
+unsigned long long get_rbp(pid_t pid) {
+  struct user_regs_struct regs;
+
+  x_ptrace_get_register_info(pid, &regs);
+
+  return regs.rbp;
+}
+
+unsigned long long get_rip(pid_t pid) {
+  struct user_regs_struct regs;
+
+  x_ptrace_get_register_info(pid, &regs);
+
+  return regs.rip;
+}

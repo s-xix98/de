@@ -16,9 +16,13 @@
 void print_regs(pid_t pid);
 void print_regs_to_json_file(pid_t pid);
 unsigned long long get_rsp(pid_t pid);
+unsigned long long get_rbp(pid_t pid);
+unsigned long long get_rip(pid_t pid);
 
 void print_mem(pid_t pid, void *addr, size_t n);
 void print_stack(pid_t pid);
 void print_stack_to_json_file(pid_t pid);
+
+void print_bt(pid_t pid);
 
 #endif  // DE_H
