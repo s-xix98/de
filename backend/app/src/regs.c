@@ -68,8 +68,7 @@ void print_regs_to_json_file(pid_t pid) {
   fclose(output_file);
 }
 
-// TODO : long -> ull ?
-long get_rsp(pid_t pid) {
+unsigned long long get_rsp(pid_t pid) {
   struct user_regs_struct regs;
 
   x_ptrace_get_register_info(pid, &regs);
