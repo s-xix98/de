@@ -4,6 +4,8 @@ import subprocess
 
 DE_CMD_OUTPUT_END = "---DE_CMD_OUTPUT_END---"
 
+OBJDUMP_SECTION_STR = "Disassembly of section "
+
 
 def make() -> bool:
     proc = subprocess.run("make", shell=True, cwd="app")
@@ -14,7 +16,41 @@ def get_objdump_output(path) -> str:
     return proc.stdout.decode()
 
 
-def show_asm_code(rip, objdump_output_splited, output_range=5):
+def parse_objdump_output(objdump_output: str):
+    func_dic = {}
+
+    section = ""
+    func_name = ""
+    dump_target_info = ""
+    for line in objdump_output.splitlines():
+        if line == "":
+            continue
+        if dump_target_info == "":
+            dump_target_info = line
+        elif line.startswith(OBJDUMP_SECTION_STR):
+            # Disassembly of section .text: -> "text"
+            section = line[len(OBJDUMP_SECTION_STR) - 1 : -1]
+        elif line[0].isdigit():
+            # 0000000000401106 <main>: -> func_addr "0000000000401106", "func_name" main
+            splited_line = line.split()
+            func_addr = int(splited_line[0], 16)
+            func_name = splited_line[1][1:-2]
+            func_dic[func_name] = {"section": section, "func_addr": func_addr, "code": []}
+        else:
+            func_dic[func_name]["code"].append(line)
+    return func_dic
+
+
+def get_main_addr(func_dic) -> int:
+    main_func_dic = func_dic.get("main")
+    if main_func_dic == None:
+        return None
+    return main_func_dic["func_addr"]
+
+
+def show_asm_code(rip, objdump_output, output_range=5):
+    objdump_output_splited = objdump_output.splitlines()
+
     idx = 0
     for line in objdump_output_splited:
         # TODO : "  " objdump の 出力に依存している ちゃんとパースして消す
@@ -30,14 +66,6 @@ def show_asm_code(rip, objdump_output_splited, output_range=5):
         idx += 1
 
 
-def get_main_addr(objdump_output_splited) -> int:
-    for line in objdump_output_splited:
-        if "<main>" in line:
-            main_addr = int(line.split()[0], 16)
-            return main_addr
-    return None
-
-
 def get_rip(s) -> int:
     for line in s.splitlines():
         if "RIP" in line:
@@ -48,10 +76,13 @@ def get_rip(s) -> int:
 
 def interactive():
     target_path = "./app/target"
-    objdump_output_splited = get_objdump_output(target_path).splitlines()
+
+    objdump_output = get_objdump_output(target_path)
+    func_dic = parse_objdump_output(objdump_output)
+
     connection = pexpect.spawn(f"./app/de {target_path}", encoding="utf-8")
 
-    main_addr = get_main_addr(objdump_output_splited)
+    main_addr = get_main_addr(func_dic)
     if main_addr == None:
         print("Error : main addr not found")
         sys.exit(1)
@@ -75,7 +106,7 @@ def interactive():
         print("RIP :", hex(rip))
         print()
 
-        show_asm_code(rip, objdump_output_splited)
+        show_asm_code(rip, objdump_output)
 
 
 def main():
