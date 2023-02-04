@@ -48,6 +48,13 @@ def get_func_addr(func_dic, target_func_name) -> int:
     return target_func_dic["func_addr"]
 
 
+def print_func_lst(func_dic: dict) -> None:
+    print("--- PRINT_FUNC_LST ---")
+    for key in func_dic.keys():
+        print(f"{key[:30]:<30} : 0x{func_dic[key]['func_addr']:x}")
+    print()
+
+
 def get_main_addr(func_dic) -> int:
     return get_func_addr(func_dic, "main")
 
@@ -83,7 +90,9 @@ def interactive():
 
     objdump_output = get_objdump_output(target_path)
     func_dic = parse_objdump_output(objdump_output)
+    print_func_lst(func_dic)
 
+    print("--- START ---")
     connection = pexpect.spawn(f"./app/de {target_path}", encoding="utf-8")
 
     main_addr = get_main_addr(func_dic)
