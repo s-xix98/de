@@ -41,11 +41,15 @@ def parse_objdump_output(objdump_output: str):
     return func_dic
 
 
-def get_main_addr(func_dic) -> int:
-    main_func_dic = func_dic.get("main")
-    if main_func_dic == None:
+def get_func_addr(func_dic, target_func_name) -> int:
+    target_func_dic = func_dic.get(target_func_name)
+    if target_func_dic == None:
         return None
-    return main_func_dic["func_addr"]
+    return target_func_dic["func_addr"]
+
+
+def get_main_addr(func_dic) -> int:
+    return get_func_addr(func_dic, "main")
 
 
 def show_asm_code(rip, objdump_output, output_range=5):
