@@ -1,34 +1,28 @@
+import { Socket } from 'socket.io-client';
+import { useEffect, useState } from 'react';
+
 import { RegType } from '../features/regs/types/RegType';
 import { ShowRegs } from '../features/regs/components/ShowRegs';
-import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:8000');
+export const RegsArea = ({ socket }: { socket: Socket }) => {
+  const [regsArr, setRegsArr] = useState<RegType[]>([]);
 
-export const RegsArea = () => {
-  socket.on('connect', () => {
-    console.log('socket connect', socket.connect());
-  });
-
-  let regsArr: Array<RegType> = [
-    { name: 'RAX', val: 0 },
-    { name: 'RBX', val: 1 },
-  ];
+  useEffect(() => {
+    socket.on('get_regs', (res) => {
+      setRegsArr(res);
+    });
+  }, []);
 
   const clickAct = () => {
     const res = socket.emit('get_regs');
-    console.log('');
     console.log('CLICK ACT', res);
-    console.log('');
   };
-
-  socket.on('get_regs', (res) => {
-    console.log('SOCKET.ON GET_REGS', res);
-  });
 
   return (
     <div>
-      <button onClick={clickAct}>button</button>
+      <h1>RegsArea</h1>
       <ShowRegs regs={regsArr} />
+      <button onClick={clickAct}>get_regs</button>
     </div>
   );
 };
