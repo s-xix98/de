@@ -21,8 +21,8 @@ export const RegsArea = ({ socket }: { socket: Socket }) => {
   return (
     <div>
       <h1>RegsArea</h1>
+      <button onClick={clickAct}>Get Regs</button>
       <ShowRegs regs={regsArr} />
-      <button onClick={clickAct}>get_regs</button>
     </div>
   );
 };
