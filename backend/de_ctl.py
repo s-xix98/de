@@ -1,4 +1,5 @@
 import sys
+import json
 import pexpect
 import subprocess
 
@@ -117,11 +118,16 @@ def show_asm_func_code(func_dic, rip, func_name):
     target_func_dic = func_dic[func_name]
     print(f"{func_name} RIP {hex(rip)}")
     print()
+    code_lst = []
     for line in target_func_dic["code"]:
         if "  " + str(hex(rip))[2:] in line.split(":")[0]:
             print(f"==> {line}")
+            code_lst.append(f"==> {line}")
         else:
             print(f"    {line}")
+            code_lst.append(f"    {line}")
+    with open("json/de_output/code.json", mode="w+") as f:
+        f.write(json.dumps(code_lst, indent=2))
 
 
 def show_asm_code(rip, objdump_output, output_range=5):
