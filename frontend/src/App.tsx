@@ -32,8 +32,16 @@ function App() {
     });
   }, []);
 
-  const clickAct = () => {
+  const initAct = () => {
     let res;
+    res = socket.emit('init');
+    res = socket.emit('get_regs');
+    res = socket.emit('get_code');
+  };
+
+  const singleStepAct = () => {
+    let res;
+    res = socket.emit('single_step');
     res = socket.emit('get_regs');
     res = socket.emit('get_code');
   };
@@ -42,7 +50,8 @@ function App() {
     <div>
       <h1>DE</h1>
       <hr />
-      <button onClick={clickAct}>Get Info</button>
+      <button onClick={initAct}>INIT</button>
+      <button onClick={singleStepAct}>S</button>
       <div className="box">
         <div className="one">
           <RegsArea regsArr={regsArr} />
