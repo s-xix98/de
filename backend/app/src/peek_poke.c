@@ -32,23 +32,23 @@ void print_stack_to_json_file(pid_t pid) {
   size_t print_stack_size = 64;
   size_t cnt = print_stack_size / WORD_SIZE;
 
-  FILE *output_file = fopen(STACK_JSON_FILE, "w+");
-  if (output_file == NULL) {
+  FILE *fp = fopen(STACK_JSON_FILE, "w+");
+  if (fp == NULL) {
     fprintf(stderr, "Error : print_stack_to_json_file fopen\n");
     exit(1);
   }
 
-  fprintf(output_file, "{\n");
-  fprintf(output_file, "  \"stack\": [\n");
+  fprintf(fp, "{\n");
+  fprintf(fp, "  \"stack\": [\n");
   for (size_t i = 0; i < cnt; i++) {
     bool is_last = i == cnt - 1;
     long data = x_ptrace_get_data_from_addr(pid, addr);
-    fprintf(output_file, "    { \"%p\": \"%lx\" }", addr, data);
-    fprintf(output_file, "%s", is_last ? "\n" : ",\n");
+    fprintf(fp, "    { \"%p\": \"%lx\" }", addr, data);
+    fprintf(fp, "%s", is_last ? "\n" : ",\n");
     addr += WORD_SIZE;
   }
-  fprintf(output_file, "  ]\n");
-  fprintf(output_file, "}\n");
+  fprintf(fp, "  ]\n");
+  fprintf(fp, "}\n");
 
-  fclose(output_file);
+  fclose(fp);
 }
