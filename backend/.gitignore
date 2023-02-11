@@ -5,3 +5,5 @@ a.out
 # gdb
 .gdb_history
 peda-session*
+
+json/de_output/*

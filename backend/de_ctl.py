@@ -46,10 +46,11 @@ class DE:
 
 def make() -> bool:
     proc = subprocess.run("make", shell=True, cwd="app")
+    return proc.returncode == 0
 
 
 def get_objdump_output(path) -> str:
-    proc = subprocess.run(f"objdump -DS -M intel {path}", shell=True, stdout=subprocess.PIPE)
+    proc = subprocess.run(f"objdump -DS -M intel --insn-width=10 {path}", shell=True, stdout=subprocess.PIPE)
     return proc.stdout.decode()
 
 
@@ -132,7 +133,9 @@ def interactive():
 
 
 def main():
-    make()
+    if make() == False:
+        print("Error : make fail")
+        sys.exit(1)
     interactive()
 
 
