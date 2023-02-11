@@ -19,4 +19,6 @@ services:
       - 8000:8000
     volumes:
       - ./backend:/workdir
-    command: python3 -u main.py
+    environment:
+      PYTHONUNBUFFERED : 1
+    command: adev runserver

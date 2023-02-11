@@ -5,6 +5,8 @@
 #include <sys/user.h>
 #include <unistd.h>
 
+#include "error.h"
+
 // long ptrace(enum ptrace_request request, pid_t pid, void *addr, void *data);
 
 // PTRACE_CONT
@@ -12,7 +14,7 @@
 void x_ptrace_cont_process(pid_t pid) {
   long ret = ptrace(PTRACE_CONT, pid, NULL, NULL);
   if (ret == -1) {
-    exit(1);
+    err_exit(__func__);
   }
 }
 
@@ -21,7 +23,7 @@ void x_ptrace_cont_process(pid_t pid) {
 void x_ptrace_run_single_step(pid_t pid) {
   long ret = ptrace(PTRACE_SINGLESTEP, pid, NULL, NULL);
   if (ret == -1) {
-    exit(1);
+    err_exit(__func__);
   }
 }
 
@@ -31,7 +33,7 @@ long x_ptrace_get_data_from_addr(pid_t pid, void *addr) {
   errno = 0;
   long data = ptrace(PTRACE_PEEKTEXT, pid, addr, NULL);
   if (data == -1 && errno != 0) {
-    exit(1);
+    err_exit(__func__);
   }
   return data;
 }
@@ -42,7 +44,7 @@ long x_ptrace_get_data_from_addr(pid_t pid, void *addr) {
 void x_ptrace_set_data_to_addr(pid_t pid, void *addr, long data) {
   long ret = ptrace(PTRACE_POKETEXT, pid, addr, data);
   if (ret == -1) {
-    exit(1);
+    err_exit(__func__);
   }
 }
 
@@ -51,7 +53,7 @@ void x_ptrace_set_data_to_addr(pid_t pid, void *addr, long data) {
 void x_ptrace_get_register_info(pid_t pid, struct user_regs_struct *regs) {
   long ret = ptrace(PTRACE_GETREGS, pid, NULL, regs);
   if (ret == -1) {
-    exit(1);
+    err_exit(__func__);
   }
 }
 
@@ -60,6 +62,6 @@ void x_ptrace_get_register_info(pid_t pid, struct user_regs_struct *regs) {
 void x_ptrace_set_register_info(pid_t pid, struct user_regs_struct *regs) {
   long ret = ptrace(PTRACE_SETREGS, pid, NULL, regs);
   if (ret == -1) {
-    exit(1);
+    err_exit(__func__);
   }
 }
