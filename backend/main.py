@@ -1,3 +1,5 @@
+import json
+
 import socketio
 from aiohttp import web
 
@@ -20,6 +22,14 @@ def connect(sid, environ):
 @sio.event
 async def chat_message(sid, data):
     print("message ", data)
+
+
+@sio.event
+async def get_regs(sid):
+    print("get_regs", sid)
+    with open("json/regs.json") as f:
+        regs_json = json.load(f)
+    await sio.emit("get_regs", regs_json)
 
 
 @sio.event

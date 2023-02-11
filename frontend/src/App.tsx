@@ -1,34 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+
+import { io } from 'socket.io-client';
+
+import { RegType } from './features/regs/types/RegType';
+import { RegsArea } from './components/RegsArea';
+
+const socket = io('http://localhost:8000');
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [regsArr, setRegsArr] = useState<RegType[]>([]);
+
+  socket.on('connect', () => {
+    console.log('socket connect', socket.connect());
+  });
+
+  useEffect(() => {
+    socket.on('get_regs', (res) => {
+      setRegsArr(res);
+    });
+  }, []);
+
+  const clickAct = () => {
+    const res = socket.emit('get_regs');
+    console.log('CLICK ACT', res);
+  };
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <div>
+      <h1>DE</h1>
+      <hr />
+      <button onClick={clickAct}>Get Info</button>
+      <RegsArea regsArr={regsArr} />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
