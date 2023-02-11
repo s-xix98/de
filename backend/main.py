@@ -33,6 +33,14 @@ async def get_regs(sid):
 
 
 @sio.event
+async def get_code(sid):
+    print("get_code", sid)
+    with open("json/code.json") as f:
+        code_json = json.load(f)
+    await sio.emit("get_code", code_json)
+
+
+@sio.event
 def disconnect(sid):
     print("disconnect ", sid)
 

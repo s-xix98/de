@@ -14,6 +14,7 @@ const socket = io('http://localhost:8000');
 
 function App() {
   const [regsArr, setRegsArr] = useState<RegType[]>([]);
+  const [codeArr, setCodeArr] = useState<string[]>([]);
 
   socket.on('connect', () => {
     console.log('socket connect', socket.connect());
@@ -25,9 +26,16 @@ function App() {
     });
   }, []);
 
+  useEffect(() => {
+    socket.on('get_code', (res) => {
+      setCodeArr(res);
+    });
+  }, []);
+
   const clickAct = () => {
-    const res = socket.emit('get_regs');
-    console.log('CLICK ACT', res);
+    let res;
+    res = socket.emit('get_regs');
+    res = socket.emit('get_code');
   };
 
   return (
@@ -40,7 +48,7 @@ function App() {
           <RegsArea regsArr={regsArr} />
         </div>
         <div className="two">
-          <CodeArea />
+          <CodeArea codeArr={codeArr} />
         </div>
         <div className="three">
           <MemoryArea />
