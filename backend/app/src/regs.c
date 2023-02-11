@@ -34,38 +34,38 @@ void print_regs(pid_t pid) {
 }
 
 void print_regs_to_json_file(pid_t pid) {
-  FILE *output_file;
+  FILE *fp;
   struct user_regs_struct regs;
 
-  output_file = fopen(REGS_JSON_FILE, "w+");
-  if (output_file == NULL) {
+  fp = fopen(REGS_JSON_FILE, "w+");
+  if (fp == NULL) {
     fprintf(stderr, "Error : print_regs_to_json_file fopen\n");
     exit(1);
   }
 
   x_ptrace_get_register_info(pid, &regs);
 
-  fprintf(output_file, "{\n");
-  fprintf(output_file, "  \"RAX\": \"0x%llx\",\n", regs.rax);
-  fprintf(output_file, "  \"RBX\": \"0x%llx\",\n", regs.rbx);
-  fprintf(output_file, "  \"RCX\": \"0x%llx\",\n", regs.rcx);
-  fprintf(output_file, "  \"RDX\": \"0x%llx\",\n", regs.rdx);
-  fprintf(output_file, "  \"RSI\": \"0x%llx\",\n", regs.rsi);
-  fprintf(output_file, "  \"RDI\": \"0x%llx\",\n", regs.rdi);
-  fprintf(output_file, "  \"RBP\": \"0x%llx\",\n", regs.rbp);
-  fprintf(output_file, "  \"RSP\": \"0x%llx\",\n", regs.rsp);
-  fprintf(output_file, "  \"RIP\": \"0x%llx\",\n", regs.rip);
-  fprintf(output_file, "  \"R8\": \"0x%llx\",\n", regs.r8);
-  fprintf(output_file, "  \"R9\": \"0x%llx\",\n", regs.r9);
-  fprintf(output_file, "  \"R10\": \"0x%llx\",\n", regs.r10);
-  fprintf(output_file, "  \"R11\": \"0x%llx\",\n", regs.r11);
-  fprintf(output_file, "  \"R12\": \"0x%llx\",\n", regs.r12);
-  fprintf(output_file, "  \"R13\": \"0x%llx\",\n", regs.r13);
-  fprintf(output_file, "  \"R14\": \"0x%llx\",\n", regs.r14);
-  fprintf(output_file, "  \"R15\": \"0x%llx\"\n", regs.r15);
-  fprintf(output_file, "}\n");
+  fprintf(fp, "[\n");
+  fprintf(fp, "  {\"name\" : \"RAX\", \"val\" : \"0x%llx\"},\n", regs.rax);
+  fprintf(fp, "  {\"name\" : \"RBX\", \"val\" : \"0x%llx\"},\n", regs.rbx);
+  fprintf(fp, "  {\"name\" : \"RCX\", \"val\" : \"0x%llx\"},\n", regs.rcx);
+  fprintf(fp, "  {\"name\" : \"RDX\", \"val\" : \"0x%llx\"},\n", regs.rdx);
+  fprintf(fp, "  {\"name\" : \"RSI\", \"val\" : \"0x%llx\"},\n", regs.rsi);
+  fprintf(fp, "  {\"name\" : \"RDI\", \"val\" : \"0x%llx\"},\n", regs.rdi);
+  fprintf(fp, "  {\"name\" : \"RBP\", \"val\" : \"0x%llx\"},\n", regs.rbp);
+  fprintf(fp, "  {\"name\" : \"RSP\", \"val\" : \"0x%llx\"},\n", regs.rsp);
+  fprintf(fp, "  {\"name\" : \"RIP\", \"val\" : \"0x%llx\"},\n", regs.rip);
+  fprintf(fp, "  {\"name\" : \"R8 \", \"val\" : \"0x%llx\"},\n", regs.r8);
+  fprintf(fp, "  {\"name\" : \"R9 \", \"val\" : \"0x%llx\"},\n", regs.r9);
+  fprintf(fp, "  {\"name\" : \"R10\", \"val\" : \"0x%llx\"},\n", regs.r10);
+  fprintf(fp, "  {\"name\" : \"R11\", \"val\" : \"0x%llx\"},\n", regs.r11);
+  fprintf(fp, "  {\"name\" : \"R12\", \"val\" : \"0x%llx\"},\n", regs.r12);
+  fprintf(fp, "  {\"name\" : \"R13\", \"val\" : \"0x%llx\"},\n", regs.r13);
+  fprintf(fp, "  {\"name\" : \"R14\", \"val\" : \"0x%llx\"},\n", regs.r14);
+  fprintf(fp, "  {\"name\" : \"R15\", \"val\" : \"0x%llx\"}\n", regs.r15);
+  fprintf(fp, "]\n");
 
-  fclose(output_file);
+  fclose(fp);
 }
 
 unsigned long long get_rsp(pid_t pid) {
