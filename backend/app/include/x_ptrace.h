@@ -2,6 +2,7 @@
 #define X_PTRACE_H
 
 #include <sys/types.h>
+#include <sys/user.h>
 
 // PTRACE_CONT
 void x_ptrace_cont_process(pid_t pid);
