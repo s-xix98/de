@@ -38,17 +38,15 @@ void print_stack_to_json_file(pid_t pid) {
     exit(1);
   }
 
-  fprintf(fp, "{\n");
-  fprintf(fp, "  \"stack\": [\n");
+  fprintf(fp, "[\n");
   for (size_t i = 0; i < cnt; i++) {
     bool is_last = i == cnt - 1;
     long data = x_ptrace_get_data_from_addr(pid, addr);
-    fprintf(fp, "    { \"%p\": \"%lx\" }", addr, data);
+    fprintf(fp, "  { \"addr\": \"%p\", \"val\": \"%lx\" }", addr, data);
     fprintf(fp, "%s", is_last ? "\n" : ",\n");
     addr += WORD_SIZE;
   }
-  fprintf(fp, "  ]\n");
-  fprintf(fp, "}\n");
+  fprintf(fp, "]\n");
 
   fclose(fp);
 }
