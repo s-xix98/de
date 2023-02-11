@@ -11,7 +11,7 @@ class DE:
     def __init__(self, target_path):
         self.target_path = target_path
         self.objdump_output = get_objdump_output(target_path)
-        self.func_dic = parse_objdump_output(self.objdump_output)
+        self.func_dic, self.addr_dic = parse_objdump_output(self.objdump_output)
         print_func_lst(self.func_dic)
         self.connection = None
 
@@ -55,6 +55,7 @@ def get_objdump_output(path) -> str:
 
 def parse_objdump_output(objdump_output: str):
     func_dic = {}
+    addr_dic = {}
 
     section = ""
     func_name = ""
@@ -75,7 +76,14 @@ def parse_objdump_output(objdump_output: str):
             func_dic[func_name] = {"section": section, "func_addr": func_addr, "code": []}
         else:
             func_dic[func_name]["code"].append(line)
-    return func_dic
+            # TODO : .debug_str の時など 邪魔なので弾いた方がいいかも
+            splited_line = line.split(":", maxsplit=1)
+            if len(splited_line) != 2:
+                continue
+            addr_dic[int(splited_line[0], 16)] = func_name
+    return func_dic, addr_dic
+
+
 
 
 def get_func_addr(func_dic, target_func_name) -> int:
