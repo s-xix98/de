@@ -58,13 +58,18 @@ void go_to_main(pid_t pid) {
   free(main_addr_line);
 
   printf("main addr %p\n", main_addr);
-  printf(DE_CMD_OUTPUT_END "\n");
-  fflush(stdout);
 
   long original_inst = set_brk_point(pid, main_addr);
   x_ptrace_cont_process(pid);
   wait(NULL);
   restore_ori_inst(pid, main_addr, original_inst);
+
+  print_regs(pid);
+  print_regs_to_json_file(pid);
+  print_stack(pid);
+  print_stack_to_json_file(pid);
+  printf(DE_CMD_OUTPUT_END "\n");
+  fflush(stdout);
 }
 
 void tracer(pid_t pid) {
