@@ -10,8 +10,8 @@
 #define DE_CMD_INVALID NULL
 #define DE_CMD_SINGLE_STEP "s"
 
-#define REGS_JSON_FILE "de_output_json/regs.json"
-#define STACK_JSON_FILE "de_output_json/stack.json"
+#define REGS_JSON_FILE "json/de_output/regs.json"
+#define STACK_JSON_FILE "json/de_output/stack.json"
 
 void print_regs(pid_t pid);
 void print_regs_to_json_file(pid_t pid);
