@@ -3,7 +3,12 @@ import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 
 import { RegType } from './features/regs/types/RegType';
+
 import { RegsArea } from './components/RegsArea';
+import { CodeArea } from './components/CodeArea';
+import { MemoryArea } from './components/MemoryArea';
+
+import './App.css';
 
 const socket = io('http://localhost:8000');
 
@@ -30,7 +35,17 @@ function App() {
       <h1>DE</h1>
       <hr />
       <button onClick={clickAct}>Get Info</button>
-      <RegsArea regsArr={regsArr} />
+      <div className="box">
+        <div className="one">
+          <RegsArea regsArr={regsArr} />
+        </div>
+        <div className="two">
+          <CodeArea />
+        </div>
+        <div className="three">
+          <MemoryArea />
+        </div>
+      </div>
     </div>
   );
 }
