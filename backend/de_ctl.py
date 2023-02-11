@@ -11,7 +11,7 @@ def make() -> bool:
 
 
 def get_objdump_output(path) -> str:
-    proc = subprocess.run(f"objdump -DS -M intel {path}", shell=True, stdout=subprocess.PIPE)
+    proc = subprocess.run(f"objdump -DS -M intel --insn-width=10 {path}", shell=True, stdout=subprocess.PIPE)
     return proc.stdout.decode()
 
 
