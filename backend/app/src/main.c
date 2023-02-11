@@ -13,6 +13,9 @@
 #include "de.h"
 #include "x_ptrace.h"
 
+// TODO : sizeof(long)でいいか確認する。
+#define WORD_SIZE sizeof(long)
+
 #define DE_CMD_OUTPUT_END "---DE_CMD_OUTPUT_END---"
 #define DE_CMD_INVALID NULL
 #define DE_CMD_SINGLE_STEP "s"
@@ -71,6 +74,26 @@ void go_to_main(pid_t pid) {
   restore_ori_inst(pid, main_addr, original_inst);
 }
 
+void print_mem(pid_t pid, void *addr, size_t n) {
+  size_t cnt = n / WORD_SIZE;
+
+  for (size_t i = 0; i < cnt; i++) {
+    long data = x_ptrace_get_data_from_addr(pid, addr);
+    printf("%p | 0x%lx\n", addr, data);
+    addr += WORD_SIZE;
+  }
+}
+
+void print_stack(pid_t pid) {
+  unsigned long long rsp = get_rsp(pid);
+  size_t print_stack_size = 64;
+
+  printf("rsp : %llx\n", rsp);
+  printf("--- print stack ---\n");
+  print_mem(pid, (void *)rsp, print_stack_size);
+  printf("\n");
+}
+
 void tracer(pid_t pid) {
   wait(NULL);
 
@@ -94,6 +117,7 @@ void tracer(pid_t pid) {
       prev_cmd = DE_CMD_SINGLE_STEP;
       single_step(pid);
       print_regs(pid);
+      print_stack(pid);
     } else {
       prev_cmd = DE_CMD_INVALID;
       printf("Invalid command\n");
