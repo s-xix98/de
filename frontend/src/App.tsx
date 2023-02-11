@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 
 import { RegType } from './features/regs/types/RegType';
+import { MemoryType } from './features/memory/types/MemoryType';
 
 import { RegsArea } from './components/RegsArea';
 import { CodeArea } from './components/CodeArea';
@@ -15,6 +16,7 @@ const socket = io('http://localhost:8000');
 function App() {
   const [regsArr, setRegsArr] = useState<RegType[]>([]);
   const [codeArr, setCodeArr] = useState<string[]>([]);
+  const [memArr, setMemArr] = useState<MemoryType[]>([]);
 
   socket.on('connect', () => {
     console.log('socket connect', socket.connect());
@@ -32,11 +34,19 @@ function App() {
     });
   }, []);
 
+  useEffect(() => {
+    socket.on('get_mem', (res) => {
+      setMemArr(res);
+      console.log(res);
+    });
+  });
+
   const initAct = () => {
     let res;
     res = socket.emit('init');
     res = socket.emit('get_regs');
     res = socket.emit('get_code');
+    res = socket.emit('get_mem');
   };
 
   const singleStepAct = () => {
@@ -44,6 +54,7 @@ function App() {
     res = socket.emit('single_step');
     res = socket.emit('get_regs');
     res = socket.emit('get_code');
+    res = socket.emit('get_mem');
   };
 
   return (
@@ -60,7 +71,7 @@ function App() {
           <CodeArea codeArr={codeArr} />
         </div>
         <div className="three">
-          <MemoryArea />
+          <MemoryArea memArr={memArr} />
         </div>
       </div>
     </div>

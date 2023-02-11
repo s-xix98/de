@@ -63,6 +63,14 @@ async def get_code(sid):
 
 
 @sio.event
+async def get_mem(sid):
+    print("get_mem", sid)
+    with open("json/de_output/stack.json") as f:
+        stack_json = json.load(f)
+    await sio.emit("get_mem", stack_json)
+
+
+@sio.event
 def disconnect(sid):
     print("disconnect ", sid)
 
