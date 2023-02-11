@@ -37,7 +37,7 @@ class DE:
         rip = get_rip(de_output)
         if rip == None:
             print("Error : rip not found")
-            sys.exit(1)
+            return
         print("RIP :", hex(rip))
         print()
 
