@@ -1,9 +1,11 @@
 int main(void) {
-  int a = 3;
-  int b = 39;
+  long a = -1;
+  long b = -2;
+  long c = -3;
 
-  int ret = a + b;
-  (void)ret;
+  (void)a;
+  (void)b;
+  (void)c;
 
   return 0;
 }
