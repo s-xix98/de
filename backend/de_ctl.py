@@ -41,7 +41,10 @@ class DE:
         print("RIP :", hex(rip))
         print()
 
-        show_asm_code(rip, self.objdump_output)
+        exec_func_name = get_func_name_by_rip(self.addr_dic, rip)
+        if exec_func_name == None:
+            return
+        show_asm_func_code(self.func_dic, rip, exec_func_name)
 
 
 def make() -> bool:
@@ -84,6 +87,12 @@ def parse_objdump_output(objdump_output: str):
     return func_dic, addr_dic
 
 
+def get_func_name_by_rip(addr_dic, rip):
+    func_name = addr_dic.get(rip)
+    if func_name == None:
+        print("Error : func name not found", hex(rip))
+        return None
+    return func_name
 
 
 def get_func_addr(func_dic, target_func_name) -> int:
@@ -102,6 +111,17 @@ def print_func_lst(func_dic: dict) -> None:
 
 def get_main_addr(func_dic) -> int:
     return get_func_addr(func_dic, "main")
+
+
+def show_asm_func_code(func_dic, rip, func_name):
+    target_func_dic = func_dic[func_name]
+    print(f"{func_name} RIP {hex(rip)}")
+    print()
+    for line in target_func_dic["code"]:
+        if "  " + str(hex(rip))[2:] in line.split(":")[0]:
+            print(f"==> {line}")
+        else:
+            print(f"    {line}")
 
 
 def show_asm_code(rip, objdump_output, output_range=5):
