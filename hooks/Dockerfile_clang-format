@@ -1,0 +1,22 @@
+FROM alpine:3.17.1 as build
+
+RUN apk add --no-cache clang-extra-tools
+
+
+FROM alpine:3.17.1
+
+WORKDIR /workdir
+
+RUN apk add --no-cache \
+  clang15-libclang \
+  clang15-libs \
+  libgcc \
+  libstdc++ \
+  libxml2 \
+  llvm15-libs \
+  musl
+
+COPY --from=build /usr/bin/clang-format /usr/bin/clang-format
+
+ENTRYPOINT [ "clang-format" ]
+CMD [ "--help" ]

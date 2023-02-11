@@ -1,0 +1,36 @@
+#!/bin/bash
+set -ue
+
+# FIXME: frontのpre-commitを追加したとき衝突しそう
+
+## == clang-format ==
+target=`git diff --staged --name-only | grep -E ".+\.(c|h)"` || :
+if [ -z $target ]; then
+  echo -e "\033[35mno target file\033[m"
+  exit 0
+fi
+
+echo -e "\033[34mclang-format target:" $target "\033[m"
+
+# imageがないときbuildする
+image=de-clang-format
+if [ -z `docker images -q $image` ]; then
+  docker build -t $image -f hooks/Dockerfile_clang-format .
+fi
+
+docker run \
+  --rm \
+  -v "$(pwd):/workdir" \
+  -w /workdir \
+  --user "$(id -u):$(id -g)" \
+  $image \
+  -i $target
+
+git add $target
+
+if [ -z `git diff --staged --name-only`]; then
+  echo -e "\033[35mno staging file\033[m"
+  exit 1
+fi
+
+echo -e "\033[32mpre-commit format is finished\033[m"
