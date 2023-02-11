@@ -7,6 +7,7 @@ DE_CMD_OUTPUT_END = "---DE_CMD_OUTPUT_END---"
 
 def make() -> bool:
     proc = subprocess.run("make", shell=True, cwd="app")
+    return proc.returncode == 0
 
 
 def get_objdump_output(path) -> str:
@@ -79,7 +80,9 @@ def interactive():
 
 
 def main():
-    make()
+    if make() == False:
+        print("Error : make fail")
+        sys.exit(1)
     interactive()
 
 
