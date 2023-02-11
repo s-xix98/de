@@ -85,10 +85,10 @@ void print_mem(pid_t pid, void *addr, size_t n) {
 }
 
 void print_stack(pid_t pid) {
-  long rsp = get_rsp(pid);
+  unsigned long long rsp = get_rsp(pid);
   size_t print_stack_size = 64;
 
-  printf("rsp : %lx\n", rsp);
+  printf("rsp : %llx\n", rsp);
   printf("--- print stack ---\n");
   print_mem(pid, (void *)rsp, print_stack_size);
   printf("\n");

@@ -40,7 +40,7 @@ long x_ptrace_get_data_from_addr(pid_t pid, void *addr) {
 // アドレスにデータセット
 // TODO : long ok ?
 void x_ptrace_set_data_to_addr(pid_t pid, void *addr, long data) {
-  long ret = ptrace(PTRACE_POKETEXT, pid, (void *)addr, data);
+  long ret = ptrace(PTRACE_POKETEXT, pid, addr, data);
   if (ret == -1) {
     exit(1);
   }
