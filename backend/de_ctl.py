@@ -7,6 +7,46 @@ DE_CMD_OUTPUT_END = "---DE_CMD_OUTPUT_END---"
 OBJDUMP_SECTION_STR = "Disassembly of section "
 
 
+class DE:
+    def __init__(self, target_path):
+        self.target_path = target_path
+        self.objdump_output = get_objdump_output(target_path)
+        self.func_dic, self.addr_dic = parse_objdump_output(self.objdump_output)
+        print_func_lst(self.func_dic)
+        self.connection = None
+
+    def de_start(self):
+        print("--- START ---")
+        self.connection = pexpect.spawn(f"./app/de {self.target_path}", encoding="utf-8")
+        main_addr = get_main_addr(self.func_dic)
+        if main_addr == None:
+            print("Error : main addr not found")
+            sys.exit(1)
+        self.connection.sendline(str(hex(main_addr)[2:]))
+        self.connection.expect(DE_CMD_OUTPUT_END)
+        de_output = self.connection.before
+        print(de_output)
+
+    def de_one_cmd(self, s):
+        self.connection.sendline(s)
+        self.connection.expect(DE_CMD_OUTPUT_END)
+        de_output = self.connection.before
+
+        print(de_output)
+
+        rip = get_rip(de_output)
+        if rip == None:
+            print("Error : rip not found")
+            return
+        print("RIP :", hex(rip))
+        print()
+
+        exec_func_name = get_func_name_by_rip(self.addr_dic, rip)
+        if exec_func_name == None:
+            return
+        show_asm_func_code(self.func_dic, rip, exec_func_name)
+
+
 def make() -> bool:
     proc = subprocess.run("make", shell=True, cwd="app")
 
@@ -18,6 +58,7 @@ def get_objdump_output(path) -> str:
 
 def parse_objdump_output(objdump_output: str):
     func_dic = {}
+    addr_dic = {}
 
     section = ""
     func_name = ""
@@ -38,7 +79,20 @@ def parse_objdump_output(objdump_output: str):
             func_dic[func_name] = {"section": section, "func_addr": func_addr, "code": []}
         else:
             func_dic[func_name]["code"].append(line)
-    return func_dic
+            # TODO : .debug_str の時など 邪魔なので弾いた方がいいかも
+            splited_line = line.split(":", maxsplit=1)
+            if len(splited_line) != 2:
+                continue
+            addr_dic[int(splited_line[0], 16)] = func_name
+    return func_dic, addr_dic
+
+
+def get_func_name_by_rip(addr_dic, rip):
+    func_name = addr_dic.get(rip)
+    if func_name == None:
+        print("Error : func name not found", hex(rip))
+        return None
+    return func_name
 
 
 def get_func_addr(func_dic, target_func_name) -> int:
@@ -57,6 +111,17 @@ def print_func_lst(func_dic: dict) -> None:
 
 def get_main_addr(func_dic) -> int:
     return get_func_addr(func_dic, "main")
+
+
+def show_asm_func_code(func_dic, rip, func_name):
+    target_func_dic = func_dic[func_name]
+    print(f"{func_name} RIP {hex(rip)}")
+    print()
+    for line in target_func_dic["code"]:
+        if "  " + str(hex(rip))[2:] in line.split(":")[0]:
+            print(f"==> {line}")
+        else:
+            print(f"    {line}")
 
 
 def show_asm_code(rip, objdump_output, output_range=5):
@@ -86,40 +151,12 @@ def get_rip(s) -> int:
 
 
 def interactive():
-    target_path = "./app/target"
-
-    objdump_output = get_objdump_output(target_path)
-    func_dic = parse_objdump_output(objdump_output)
-    print_func_lst(func_dic)
-
-    print("--- START ---")
-    connection = pexpect.spawn(f"./app/de {target_path}", encoding="utf-8")
-
-    main_addr = get_main_addr(func_dic)
-    if main_addr == None:
-        print("Error : main addr not found")
-        sys.exit(1)
-
-    connection.sendline(str(hex(main_addr)[2:]))
-    connection.expect(DE_CMD_OUTPUT_END)
-    de_output = connection.before
-    print(de_output)
+    de_proc = DE("./app/target")
+    de_proc.de_start()
 
     while True:
-        connection.sendline(input())
-        connection.expect(DE_CMD_OUTPUT_END)
-        de_output = connection.before
-
-        print(de_output)
-
-        rip = get_rip(de_output)
-        if rip == None:
-            continue
-
-        print("RIP :", hex(rip))
-        print()
-
-        show_asm_code(rip, objdump_output)
+        s = input()
+        de_proc.de_one_cmd(s)
 
 
 def main():
