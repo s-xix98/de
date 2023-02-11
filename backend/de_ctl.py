@@ -7,6 +7,43 @@ DE_CMD_OUTPUT_END = "---DE_CMD_OUTPUT_END---"
 OBJDUMP_SECTION_STR = "Disassembly of section "
 
 
+class DE:
+    def __init__(self, target_path):
+        self.target_path = target_path
+        self.objdump_output = get_objdump_output(target_path)
+        self.func_dic = parse_objdump_output(self.objdump_output)
+        print_func_lst(self.func_dic)
+        self.connection = None
+
+    def de_start(self):
+        print("--- START ---")
+        self.connection = pexpect.spawn(f"./app/de {self.target_path}", encoding="utf-8")
+        main_addr = get_main_addr(self.func_dic)
+        if main_addr == None:
+            print("Error : main addr not found")
+            sys.exit(1)
+        self.connection.sendline(str(hex(main_addr)[2:]))
+        self.connection.expect(DE_CMD_OUTPUT_END)
+        de_output = self.connection.before
+        print(de_output)
+
+    def de_one_cmd(self, s):
+        self.connection.sendline(s)
+        self.connection.expect(DE_CMD_OUTPUT_END)
+        de_output = self.connection.before
+
+        print(de_output)
+
+        rip = get_rip(de_output)
+        if rip == None:
+            print("Error : rip not found")
+            sys.exit(1)
+        print("RIP :", hex(rip))
+        print()
+
+        show_asm_code(rip, self.objdump_output)
+
+
 def make() -> bool:
     proc = subprocess.run("make", shell=True, cwd="app")
 
@@ -86,40 +123,12 @@ def get_rip(s) -> int:
 
 
 def interactive():
-    target_path = "./app/target"
-
-    objdump_output = get_objdump_output(target_path)
-    func_dic = parse_objdump_output(objdump_output)
-    print_func_lst(func_dic)
-
-    print("--- START ---")
-    connection = pexpect.spawn(f"./app/de {target_path}", encoding="utf-8")
-
-    main_addr = get_main_addr(func_dic)
-    if main_addr == None:
-        print("Error : main addr not found")
-        sys.exit(1)
-
-    connection.sendline(str(hex(main_addr)[2:]))
-    connection.expect(DE_CMD_OUTPUT_END)
-    de_output = connection.before
-    print(de_output)
+    de_proc = DE("./app/target")
+    de_proc.de_start()
 
     while True:
-        connection.sendline(input())
-        connection.expect(DE_CMD_OUTPUT_END)
-        de_output = connection.before
-
-        print(de_output)
-
-        rip = get_rip(de_output)
-        if rip == None:
-            continue
-
-        print("RIP :", hex(rip))
-        print()
-
-        show_asm_code(rip, objdump_output)
+        s = input()
+        de_proc.de_one_cmd(s)
 
 
 def main():
