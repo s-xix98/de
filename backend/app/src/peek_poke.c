@@ -29,7 +29,7 @@ void print_stack(pid_t pid) {
 void print_stack_to_json_file(pid_t pid) {
   unsigned long long rsp = get_rsp(pid);
   void *addr = (void *)rsp;
-  size_t print_stack_size = 64;
+  size_t print_stack_size = 128;
   size_t cnt = print_stack_size / WORD_SIZE;
 
   FILE *fp = fopen(STACK_JSON_FILE, "w+");
