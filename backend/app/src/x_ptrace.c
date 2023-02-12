@@ -1,7 +1,9 @@
+#include <elf.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <sys/ptrace.h>
 #include <sys/types.h>
+#include <sys/uio.h>
 #include <sys/user.h>
 #include <unistd.h>
 
@@ -50,18 +52,42 @@ void x_ptrace_set_data_to_addr(pid_t pid, void *addr, long data) {
 
 // PTRACE_GETREGS
 // レジスタ情報の取得
+#ifdef PTRACE_GETREGS
 void x_ptrace_get_register_info(pid_t pid, struct user_regs_struct *regs) {
   long ret = ptrace(PTRACE_GETREGS, pid, NULL, regs);
   if (ret == -1) {
     err_exit(__func__);
   }
 }
+#else
+void x_ptrace_get_register_info(pid_t pid, struct user_regs_struct *regs) {
+  struct iovec iov;
+  iov.iov_len = sizeof(struct user_regs_struct);
+  iov.iov_base = regs;
+  long ret = ptrace(PTRACE_GETREGSET, pid, NT_PRSTATUS, &iov);
+  if (ret == -1) {
+    err_exit(__func__);
+  }
+}
+#endif
 
 // PTRACE_SETREGS
 // レジスタに値をセット
+#ifdef PTRACE_SETREGS
 void x_ptrace_set_register_info(pid_t pid, struct user_regs_struct *regs) {
   long ret = ptrace(PTRACE_SETREGS, pid, NULL, regs);
   if (ret == -1) {
     err_exit(__func__);
   }
 }
+#else
+void x_ptrace_set_register_info(pid_t pid, struct user_regs_struct *regs) {
+  struct iovec iov;
+  iov.iov_len = sizeof(struct user_regs_struct);
+  iov.iov_base = regs;
+  long ret = ptrace(PTRACE_SETREGSET, pid, NT_PRSTATUS, &iov);
+  if (ret == -1) {
+    err_exit(__func__);
+  }
+}
+#endif
