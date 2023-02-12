@@ -7,6 +7,12 @@ CFLAGS			:=		-Wall -Wextra -Werror -MMD -MP
 INCLUDE			:=		-I include
 LIBS			:=		-lreadline
 
+UNAME_M			:=		$(shell uname -m)
+
+ifeq ($(UNAME_M), aarch64)
+CFLAGS			+=		-D IS_ARM=1
+endif
+
 # SRCS
 # ------------------------------------------------------------------------------------------
 SRCS_DIR		:=		src

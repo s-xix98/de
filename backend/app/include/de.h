@@ -15,6 +15,10 @@
 
 void print_regs(pid_t pid);
 void print_regs_to_json_file(pid_t pid);
+// rip
+void set_rip(pid_t pid, unsigned long long rip);
+unsigned long long get_rip(pid_t pid);
+// rsp
 unsigned long long get_rsp(pid_t pid);
 
 void print_mem(pid_t pid, void *addr, size_t n);
