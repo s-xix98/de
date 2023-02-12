@@ -12,6 +12,7 @@ void print_regs(pid_t pid) {
   x_ptrace_get_register_info(pid, &regs);
 
   printf("--- print_registers ---\n");
+#ifndef IS_ARM
   printf("RAX : 0x%llx\n", regs.rax);
   printf("RBX : 0x%llx\n", regs.rbx);
   printf("RCX : 0x%llx\n", regs.rcx);
@@ -29,6 +30,14 @@ void print_regs(pid_t pid) {
   printf("R13 : 0x%llx\n", regs.r13);
   printf("R14 : 0x%llx\n", regs.r14);
   printf("R15 : 0x%llx\n", regs.r15);
+#else
+  printf("RSP : 0x%llx\n", regs.sp);
+  printf("RIP : 0x%llx\n", regs.pc);
+  int regs_count = 31;
+  for (int i = 0; i < regs_count; i++) {
+    printf("REGS[%d] : 0x%llx\n", i, regs.regs[i]);
+  }
+#endif
   printf("--- --- ---\n");
   printf("\n");
 }
@@ -46,6 +55,7 @@ void print_regs_to_json_file(pid_t pid) {
   x_ptrace_get_register_info(pid, &regs);
 
   fprintf(output_file, "{\n");
+#ifndef IS_ARM
   fprintf(output_file, "  \"RAX\": \"0x%llx\",\n", regs.rax);
   fprintf(output_file, "  \"RBX\": \"0x%llx\",\n", regs.rbx);
   fprintf(output_file, "  \"RCX\": \"0x%llx\",\n", regs.rcx);
@@ -63,15 +73,55 @@ void print_regs_to_json_file(pid_t pid) {
   fprintf(output_file, "  \"R13\": \"0x%llx\",\n", regs.r13);
   fprintf(output_file, "  \"R14\": \"0x%llx\",\n", regs.r14);
   fprintf(output_file, "  \"R15\": \"0x%llx\"\n", regs.r15);
+#else
+  fprintf(output_file, "  \"RSP\": \"0x%llx\",\n", regs.sp);
+  fprintf(output_file, "  \"RIP\": \"0x%llx\",\n", regs.pc);
+  int regs_count = 31;
+  for (int i = 0; i < regs_count; i++) {
+    fprintf(output_file, "  \"REGS[%d]\": \"0x%llx\",\n", i, regs.regs[i]);
+  }
+#endif
   fprintf(output_file, "}\n");
 
   fclose(output_file);
 }
 
+// rip
+// ------------------------------------------------------------------------------------------
+void set_rip(pid_t pid, unsigned long long rip) {
+  struct user_regs_struct regs;
+
+  x_ptrace_get_register_info(pid, &regs);
+#ifndef IS_ARM
+  regs.rip = rip;
+#else
+  regs.pc = rip;
+#endif
+  x_ptrace_set_register_info(pid, &regs);
+}
+
+unsigned long long get_rip(pid_t pid) {
+  struct user_regs_struct regs;
+
+  x_ptrace_get_register_info(pid, &regs);
+
+#ifndef IS_ARM
+  return regs.rip;
+#else
+  return regs.pc;
+#endif
+}
+
+// rsp
+// ------------------------------------------------------------------------------------------
 unsigned long long get_rsp(pid_t pid) {
   struct user_regs_struct regs;
 
   x_ptrace_get_register_info(pid, &regs);
 
+#ifndef IS_ARM
   return regs.rsp;
+#else
+  return regs.sp;
+#endif
 }
