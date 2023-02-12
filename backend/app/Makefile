@@ -34,7 +34,7 @@ $(NAME): $(OBJS) Makefile
 
 # -mno-red-zone
 $(TARGET): target.c Makefile
-	$(CC) $(CFLAGS) -no-pie -g3 -o $(TARGET) target.c
+	$(CC) $(CFLAGS) -no-pie -static -g3 -o $(TARGET) target.c
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c Makefile
 	mkdir -p $(@D)
