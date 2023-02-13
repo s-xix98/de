@@ -3,6 +3,8 @@ import json
 import socketio
 from aiohttp import web
 
+from de_ctl import DE
+
 sio = socketio.AsyncServer(cors_allowed_origins="*")
 app = web.Application()
 sio.attach(app)
@@ -24,10 +26,30 @@ async def chat_message(sid, data):
     print("message ", data)
 
 
+g_de_proc = None
+
+
+@sio.event
+async def init(sid):
+    print("init")
+    global g_de_proc
+    g_de_proc = DE("./app/target")
+    g_de_proc.de_start()
+
+
+@sio.event
+async def single_step(sid):
+    print("single_step")
+    global g_de_proc
+    if g_de_proc == None:
+        return
+    g_de_proc.de_one_cmd("s")
+
+
 @sio.event
 async def get_regs(sid):
     print("get_regs", sid)
-    with open("json/regs.json") as f:
+    with open("json/de_output/regs.json") as f:
         regs_json = json.load(f)
     await sio.emit("get_regs", regs_json)
 
@@ -35,7 +57,7 @@ async def get_regs(sid):
 @sio.event
 async def get_code(sid):
     print("get_code", sid)
-    with open("json/code.json") as f:
+    with open("json/de_output/code.json") as f:
         code_json = json.load(f)
     await sio.emit("get_code", code_json)
 

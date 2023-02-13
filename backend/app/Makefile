@@ -7,6 +7,12 @@ CFLAGS			:=		-Wall -Wextra -Werror -MMD -MP
 INCLUDE			:=		-I include
 LIBS			:=		-lreadline
 
+UNAME_M			:=		$(shell uname -m)
+
+ifeq ($(UNAME_M), aarch64)
+CFLAGS			+=		-D IS_ARM=1
+endif
+
 # SRCS
 # ------------------------------------------------------------------------------------------
 SRCS_DIR		:=		src
@@ -26,8 +32,9 @@ all: $(NAME) $(TARGET)
 $(NAME): $(OBJS) Makefile
 	$(CC) $(CFLAGS) $(INCLUDE) $(OBJS) $(LIBS) -o $(NAME)
 
+# -mno-red-zone
 $(TARGET): target.c Makefile
-	$(CC) $(CFLAGS) -no-pie -mno-red-zone -g3 -o $(TARGET) target.c
+	$(CC) $(CFLAGS) -no-pie -static -g3 -o $(TARGET) target.c
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.c Makefile
 	mkdir -p $(@D)

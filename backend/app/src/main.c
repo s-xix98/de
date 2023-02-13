@@ -34,20 +34,25 @@ void single_step(pid_t pid) {
   }
 }
 
+// TODO : リファクタする
 long set_brk_point(pid_t pid, void *addr) {
   long original_inst = x_ptrace_get_data_from_addr(pid, addr);
+#ifndef IS_ARM
   long trap_inst = (original_inst & ~0xff) | 0xCC;
+#else
+  long trap_inst = (original_inst & ~0xffffffff) | 0xf001f0e7;
+#endif
   x_ptrace_set_data_to_addr(pid, addr, trap_inst);
   return original_inst;
 }
 
 void restore_ori_inst(pid_t pid, void *addr, long ori_inst) {
-  struct user_regs_struct regs;
-
   x_ptrace_set_data_to_addr(pid, addr, ori_inst);
-  x_ptrace_get_register_info(pid, &regs);
-  regs.rip -= 1;
-  x_ptrace_set_register_info(pid, &regs);
+#ifndef IS_ARM
+  set_rip(pid, get_rip(pid) - 1);
+#else
+  set_rip(pid, get_rip(pid) - 4);
+#endif
   x_ptrace_run_single_step(pid);
   wait(NULL);
 }
@@ -58,13 +63,18 @@ void go_to_main(pid_t pid) {
   free(main_addr_line);
 
   printf("main addr %p\n", main_addr);
-  printf(DE_CMD_OUTPUT_END "\n");
-  fflush(stdout);
 
   long original_inst = set_brk_point(pid, main_addr);
   x_ptrace_cont_process(pid);
   wait(NULL);
   restore_ori_inst(pid, main_addr, original_inst);
+
+  print_regs(pid);
+  print_regs_to_json_file(pid);
+  print_stack(pid);
+  print_stack_to_json_file(pid);
+  printf(DE_CMD_OUTPUT_END "\n");
+  fflush(stdout);
 }
 
 void tracer(pid_t pid) {

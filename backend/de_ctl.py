@@ -1,4 +1,5 @@
 import sys
+import json
 import pexpect
 import subprocess
 
@@ -26,6 +27,18 @@ class DE:
         self.connection.expect(DE_CMD_OUTPUT_END)
         de_output = self.connection.before
         print(de_output)
+
+        rip = get_rip(de_output)
+        if rip == None:
+            print("Error : rip not found")
+            return
+        print("RIP :", hex(rip))
+        print()
+
+        exec_func_name = get_func_name_by_rip(self.addr_dic, rip)
+        if exec_func_name == None:
+            return
+        show_asm_func_code(self.func_dic, rip, exec_func_name)
 
     def de_one_cmd(self, s):
         self.connection.sendline(s)
@@ -118,11 +131,16 @@ def show_asm_func_code(func_dic, rip, func_name):
     target_func_dic = func_dic[func_name]
     print(f"{func_name} RIP {hex(rip)}")
     print()
+    code_lst = []
     for line in target_func_dic["code"]:
         if "  " + str(hex(rip))[2:] in line.split(":")[0]:
             print(f"==> {line}")
+            code_lst.append(f"==> {line}")
         else:
             print(f"    {line}")
+            code_lst.append(f"    {line}")
+    with open("json/de_output/code.json", mode="w+") as f:
+        f.write(json.dumps(code_lst, indent=2))
 
 
 def show_asm_code(rip, objdump_output, output_range=5):
