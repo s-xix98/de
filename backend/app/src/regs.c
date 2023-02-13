@@ -78,7 +78,7 @@ void print_regs_to_json_file(pid_t pid) {
   print_reg_to_fp(fp, "R12", regs.r12, ",");
   print_reg_to_fp(fp, "R13", regs.r13, ",");
   print_reg_to_fp(fp, "R14", regs.r14, ",");
-  print_reg_to_fp(fp, "R15", regs.r15, ",");
+  print_reg_to_fp(fp, "R15", regs.r15, "");
 #else
   print_reg_to_fp(fp, "RSP", regs.sp, ",");
   print_reg_to_fp(fp, "RIP", regs.pc, ",");
