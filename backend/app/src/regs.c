@@ -42,6 +42,12 @@ void print_regs(pid_t pid) {
   printf("\n");
 }
 
+void print_reg_to_fp(FILE *fp, char *reg_name, unsigned long long val,
+                     char *sep) {
+  fprintf(fp, "  {\"name\" : \"%s\", \"val\" : \"0x%llx\"}", reg_name, val);
+  fprintf(fp, "%s\n", sep);
+}
+
 void print_regs_to_json_file(pid_t pid) {
   FILE *fp;
   struct user_regs_struct regs;
@@ -56,29 +62,30 @@ void print_regs_to_json_file(pid_t pid) {
 
   fprintf(fp, "[\n");
 #ifndef IS_ARM
-  fprintf(fp, "  \"RAX\": \"0x%llx\",\n", regs.rax);
-  fprintf(fp, "  \"RBX\": \"0x%llx\",\n", regs.rbx);
-  fprintf(fp, "  \"RCX\": \"0x%llx\",\n", regs.rcx);
-  fprintf(fp, "  \"RDX\": \"0x%llx\",\n", regs.rdx);
-  fprintf(fp, "  \"RSI\": \"0x%llx\",\n", regs.rsi);
-  fprintf(fp, "  \"RDI\": \"0x%llx\",\n", regs.rdi);
-  fprintf(fp, "  \"RBP\": \"0x%llx\",\n", regs.rbp);
-  fprintf(fp, "  \"RSP\": \"0x%llx\",\n", regs.rsp);
-  fprintf(fp, "  \"RIP\": \"0x%llx\",\n", regs.rip);
-  fprintf(fp, "  \"R8\": \"0x%llx\",\n", regs.r8);
-  fprintf(fp, "  \"R9\": \"0x%llx\",\n", regs.r9);
-  fprintf(fp, "  \"R10\": \"0x%llx\",\n", regs.r10);
-  fprintf(fp, "  \"R11\": \"0x%llx\",\n", regs.r11);
-  fprintf(fp, "  \"R12\": \"0x%llx\",\n", regs.r12);
-  fprintf(fp, "  \"R13\": \"0x%llx\",\n", regs.r13);
-  fprintf(fp, "  \"R14\": \"0x%llx\",\n", regs.r14);
-  fprintf(fp, "  \"R15\": \"0x%llx\"\n", regs.r15);
+  print_reg_to_fp(fp, "RAX", regs.rax, ",");
+  print_reg_to_fp(fp, "RBX", regs.rbx, ",");
+  print_reg_to_fp(fp, "RCX", regs.rcx, ",");
+  print_reg_to_fp(fp, "RDX", regs.rdx, ",");
+  print_reg_to_fp(fp, "RSI", regs.rsi, ",");
+  print_reg_to_fp(fp, "RDI", regs.rdi, ",");
+  print_reg_to_fp(fp, "RBP", regs.rbp, ",");
+  print_reg_to_fp(fp, "RSP", regs.rsp, ",");
+  print_reg_to_fp(fp, "RIP", regs.rip, ",");
+  print_reg_to_fp(fp, "R8 ", regs.r8, ",");
+  print_reg_to_fp(fp, "R9 ", regs.r9, ",");
+  print_reg_to_fp(fp, "R10", regs.r10, ",");
+  print_reg_to_fp(fp, "R11", regs.r11, ",");
+  print_reg_to_fp(fp, "R12", regs.r12, ",");
+  print_reg_to_fp(fp, "R13", regs.r13, ",");
+  print_reg_to_fp(fp, "R14", regs.r14, ",");
+  print_reg_to_fp(fp, "R15", regs.r15, ",");
 #else
-  fprintf(fp, "  \"RSP\": \"0x%llx\",\n", regs.sp);
-  fprintf(fp, "  \"RIP\": \"0x%llx\",\n", regs.pc);
+  print_reg_to_fp(fp, "RSP", regs.sp, ",");
+  print_reg_to_fp(fp, "RIP", regs.pc, ",");
   int regs_count = 31;
   for (int i = 0; i < regs_count; i++) {
-    fprintf(fp, "  \"REGS[%d]\": \"0x%llx\",\n", i, regs.regs[i]);
+    char *sep = i != 30 ? "," : "";
+    print_reg_to_fp(fp, "REGS", regs.regs[i], sep);
   }
 #endif
   fprintf(fp, "]\n");
